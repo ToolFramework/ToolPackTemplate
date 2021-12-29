@@ -19,7 +19,6 @@ bool SubToolChain::Initialise(std::string configfile, DataModel &data){
   if(!m_variables.Get("Tools_file",tools_conf)) return false;
   if(!m_variables.Get("error_level",errorlevel)) errorlevel=2;
 
-  std::cout<<"verbosity="<<m_verbose<<std::endl;
   m_subtoolchain=new ToolChain(m_verbose, errorlevel, "Interactive", "", m_data);
 
   if(!m_subtoolchain->LoadTools(tools_conf)) return false;
