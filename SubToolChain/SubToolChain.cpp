@@ -12,12 +12,16 @@ bool SubToolChain::Initialise(std::string configfile, DataModel &data){
   m_data= &data;
   m_log= m_data->Log;
 
+  std::string tools_conf="";
+  int errorlevel=0;
+
   if(!m_variables.Get("verbose",m_verbose)) m_verbose=1;
+  if(!m_variables.Get("Tools_file",tools_conf)) return false;
+  if(!m_variables.Get("error_level",errorlevel)) errorlevel=2;
 
-  std::string tools_conf;
-  if(!m_variables.Get("ToolsConfig",tools_conf)) return false;
+  std::cout<<"verbosity="<<m_verbose<<std::endl;
+  m_subtoolchain=new ToolChain(m_verbose, errorlevel, "Interactive", "", m_data);
 
-  m_subtoolchain=new ToolChain();
   if(!m_subtoolchain->LoadTools(tools_conf)) return false;
   if(m_subtoolchain->Initialise()) return false;
 
