@@ -11,10 +11,10 @@ class ToolChain;
 /**
  * \class SubToolChain
  *
- * This is a balnk template for a Tool used by the script to generate a new custom tool. Please fill out the descripton and author information.
+ * This Tool chreats a Sub ToolCahin that runs inline with the main TtoolChain.
 *
 * $Author: B.Richards $
-* $Date: 2019/05/28 10:44:00 $
+* $Date: 2021/12/30 14:22:00 $
 */
 
 class SubToolChain: public Tool {
