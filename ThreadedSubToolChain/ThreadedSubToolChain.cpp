@@ -38,7 +38,7 @@ bool ThreadedSubToolChain::Initialise(std::string configfile, DataModel &data){
     DataModel* tmpDM=new DataModel();
     tmpDM->thread_busy_flag =&(tmparg->busy);
     m_data->thread_data_models.push_back(tmpDM);
-    tmparg->tool_chain=new ToolChain(m_verbose, errorlevel, "Interactive", "", tmpDM);
+    tmparg->tool_chain=new ToolChain(m_verbose, errorlevel, true, false, "",false, tmpDM);
     if(!tmparg->tool_chain->LoadTools(tools_conf)) return false;
     if(tmparg->tool_chain->Initialise()) return false;
     args.push_back(tmparg);
