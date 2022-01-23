@@ -30,4 +30,4 @@ jobs:
         && make clean
         && make
     - name: test
-      run: ./main
+      run: pwd && ls && ./main
