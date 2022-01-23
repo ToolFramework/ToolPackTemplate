@@ -24,6 +24,8 @@ jobs:
         && ./Import.sh All
     - name: make
       run: cd /ToolApplication
+        && pwd
+        && ls
         && source Setup.sh
         && make clean
         && make
