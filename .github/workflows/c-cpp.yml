@@ -20,7 +20,7 @@ jobs:
         && pwd
         && ls
         && mv /usr/bin/dialog /usr/bin/dialogx 
-        && ls ../../InactiveTools/
+        && ls ../../
         && ./Import.sh All
     - name: make
       run: cd ../../../
