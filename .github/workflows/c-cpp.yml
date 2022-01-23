@@ -14,8 +14,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: setup
-      run: cd /ToolApplication/UserTools/ImportedTools/ 
-        && ln -s /__w/ToolPack/ToolPack ./ 
+      run: ln -s ../ /ToolApplication/UserTools/ImportedTools/ 
+        && cd /ToolApplication/UserTools/ImportedTools/ 
         && cd ToolPack 
         && mv /usr/bin/dialog /usr/bin/dialogx 
         && ./Import.sh All
