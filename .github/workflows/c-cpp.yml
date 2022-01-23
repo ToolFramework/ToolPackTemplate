@@ -23,7 +23,7 @@ jobs:
         && ls ../../
         && ./Import.sh All
     - name: make
-      run: cd ../../../
+      run: cd /ToolApplication/
         && source Setup.sh
         && make clean
         && make
