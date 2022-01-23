@@ -14,20 +14,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: setup
-      run: pwd && ls && cp -R `pwd` /ToolApplication/UserTools/ImportedTools/ToolPack 
-        && cd /ToolApplication/UserTools/ImportedTools/ 
-        && cd ToolPack 
-        && pwd
-        && ls
+      run: cp -R `pwd` /ToolApplication/UserTools/ImportedTools/ToolPack 
+        && cd /ToolApplication/UserTools/ImportedTools/ToolPack
         && mv /usr/bin/dialog /usr/bin/dialogx 
-        && ls ../../
         && ./Import.sh All
     - name: make
       run: cd /ToolApplication
-        && pwd
-        && ls
         && source ./Setup.sh
         && make clean
         && make
     - name: test
-      run: pwd && ls && ./main
+      run: cd /ToolApplication && ./main
