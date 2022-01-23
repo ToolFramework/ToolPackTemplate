@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: setup
-      run: pwd && ls && ln -s `pwd` /ToolApplication/UserTools/ImportedTools/ToolPack 
+      run: pwd && ls && mv `pwd` /ToolApplication/UserTools/ImportedTools/ToolPack 
         && cd /ToolApplication/UserTools/ImportedTools/ 
         && cd ToolPack 
         && pwd
