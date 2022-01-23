@@ -17,6 +17,8 @@ jobs:
       run: pwd && ls && ln -s ./ /ToolApplication/UserTools/ImportedTools/ToolPack 
         && cd /ToolApplication/UserTools/ImportedTools/ 
         && cd ToolPack 
+        && pwd
+        && ls
         && mv /usr/bin/dialog /usr/bin/dialogx 
         && ./Import.sh All
     - name: make
