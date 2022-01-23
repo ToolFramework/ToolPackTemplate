@@ -5,7 +5,7 @@ then
     
     if [ "$1" == "" ]
     then
-	echo -e "Usage: ./Import <\"Toolname\" or \"All\">
+	echo -e "Usage: ./Import <\"Toolname\" or \"All\">"
     elif [ "$1" == "All" ]
     then
 	for Tool in `ls -d */|sed s:/::`
