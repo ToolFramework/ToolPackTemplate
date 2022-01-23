@@ -24,4 +24,6 @@ jobs:
         && make clean
         && make
     - name: test
-      run: cd /ToolApplication && ./main
+      run: cd /ToolApplication 
+        && source ./Setup.sh
+        && ./main
