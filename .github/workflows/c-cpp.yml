@@ -26,7 +26,7 @@ jobs:
       run: cd /ToolApplication
         && pwd
         && ls
-        && source Setup.sh
+        && source ./Setup.sh
         && make clean
         && make
     - name: test
