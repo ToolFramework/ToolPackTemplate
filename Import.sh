@@ -38,6 +38,13 @@ else
       for Tool in `cat tmptools`
       do
 	  ln -s `pwd`/$Tool ../../InactiveTools/$Tool
+	  if [ -f `pwd`/$Tool/Import.sh ]; then
+	      echo "Calling Tool $Tool import script..."
+	      `pwd`/$Tool/Import.sh
+	      if [ $? -ne 0 ]; then
+	          echo "Error occurred calling `pwd`/$Tool/Import.sh!"
+	      fi
+	  fi
   	  echo -e "\e[38;5;226m$Tool Imported  \e[0m"
       done
       rm tmptools

@@ -1,5 +1,14 @@
 #set -x
-ToolAppPath="${PWD}/../../../.."
+CURDIR=${PWD}
+thisdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+echo "Calling installer script for dependencies"
+${thisdir}/Install.sh
+if [ $? -ne 0 ]; then
+    echo "Install script returned an error, aborting"
+    return -1
+fi
+
+ToolAppPath="${thisdir}/../../../.."
 ToolAppPath=$(readlink -f ${ToolAppPath})
 echo "ToolAppPath is ${ToolAppPath}"
 
