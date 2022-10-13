@@ -2,7 +2,7 @@
 #set -x
 #set -e
 
-CURDIR=${PWD}
+CURDIR=${PWD}  # in case we need to return to it. unused.
 cd "$( dirname "${BASH_SOURCE[0]}" )"
 
 # check the ToolFramework folder exists and is writable
@@ -10,7 +10,7 @@ cd "$( dirname "${BASH_SOURCE[0]}" )"
 # assuming this script is 
 # ../ToolFrameworkApplication/UserTools/ImportedTools/ToolPack/PythonScript/Install.sh
 # then the base ToolFrameworkApplication directory should be:
-TOOLFRAMEWORKDIR=$(readlink -f ${CURDIR}/../../../..)
+TOOLFRAMEWORKDIR=$(readlink -f ${PWD}/../../../..)
 SANITYCHECK=$(ls ${TOOLFRAMEWORKDIR}/UserTools >/dev/null 2>&1; echo $?)
 if [ ! -d ${TOOLFRAMEWORKDIR} ] || [ ! -w ${TOOLFRAMEWORKDIR} ] || [ ${SANITYCHECK} -ne 0 ]; then
 	# doesn't exist or isn't writable (perhaps an immutable container?)
@@ -25,6 +25,9 @@ NEEDDEPS=""
 if [ ${REDHATLIKE} -eq 0 ]; then
 	echo "red-hat based OS"
 	# red-hat based OS.
+	# trigger yum to update its metadata
+	echo "updating yum metadata..."
+	yum list installed >/dev/null 2>&1
 	DEPS=(gcc-c++ gcc make cmake git python3 python3-libs python3-devel python3-pip patch which)
 	for DEP in "${DEPS[@]}"; do
 		echo "looking for ${DEP}..."
@@ -32,7 +35,7 @@ if [ ${REDHATLIKE} -eq 0 ]; then
 		# e.g. some python3 add-on, even if python3 is installed, but it'll do.
 		# XXX moreover, it will NOT find things like 'rh-python38-python-libs.x86_64'
 		# as would be the case if python-3.8 is installed via epel repos, or somesuch
-		GOTDEP=$(yum list installed | grep "${DEP}" >/dev/null 2>&1; echo $?)
+		GOTDEP=$(yum list installed 2>/dev/null | grep "${DEP}" >/dev/null 2>&1; echo $?)
 		if [ ${GOTDEP} -ne 0 ]; then
 			echo "not found"
 			NEEDDEPS="${NEEDDEPS} ${DEP}"
@@ -158,7 +161,7 @@ fi
 
 # if the user wants to install pip dependencies into another account
 # we'll need sudo
-GOTSUDO=`sudo whoami >/dev/null 2>&1; echo $?`
+GOTSUDO=`which sudo > /dev/null; echo $?`
 SUDOCMD=""
 if [ ${GOTSUDO} -eq 1 ] && [ "$(whoami)" != "root" ]; then
 	SUDOCMD="sudo "
@@ -379,7 +382,7 @@ fi
 # add the path to cppyy module to the Setup.sh
 cat << "EOF" >> ${TOOLFRAMEWORKDIR}/Setup.sh
 
-export PYTHONPATH=/home/${THISUSER}/.local/lib/python3.6/site-packages:$PYTHONPATH
+export PYTHONPATH=${PACKAGEPATH}:$PYTHONPATH
 
 EOF
 
