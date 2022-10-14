@@ -167,10 +167,10 @@ if [ ${GOTSUDO} -eq 1 ] && [ "$(whoami)" != "root" ]; then
 	SUDOCMD="sudo "
 fi
 
-# we don't need to be root to pip install system-wide, right...?
-OPTIONS="System ${THISUSER}"
+# seems like we also need to be root to pip install system-wide
+OPTIONS="${THISUSER}"
 if [ ${GOTSUDO} -eq 0 ]; then
-	OPTIONS="${OPTIONS} ${TOOLUSER} Other"
+	OPTIONS="System ${OPTIONS} ${TOOLUSER} Other"
 fi
 OPTIONS="${OPTIONS} Abort"
 
@@ -347,6 +347,15 @@ export PYTHONPATH=${PACKAGEPATH}:$PYTHONPATH
 
 echo "updating cppyy precompiled header"
 rm -f ${PACKAGEPATH}/cppyy/allDict.cxx.pch.*
+
+# weird bugfix when installing system-wide:
+# for some reason it doesn't copy in a required library,
+# and then segfaults when you try to 'import cppyy'
+if [ ! -f ${PACKAGEPATH}/cppyy_backend/lib/libcppyy_backend.so ]; then
+	THELIB=$(find ${DEPENDENCIESDIR}/cppyy-backend -name "libcppyy_backend.so")
+	if [ ! -z "${THELIB}" ] && [ -f $"${THELIB}" ]; then
+	cp ${THELIB} ${PACKAGEPATH}/cppyy_backend/lib/libcppyy_backend.so
+fi
 
 # a quick test, also trigger rebuilding of the pch
 echo "the following test should print 0·1·2·3·4·5·6·7·8·9¶"
