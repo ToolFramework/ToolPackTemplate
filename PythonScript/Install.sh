@@ -353,8 +353,9 @@ rm -f ${PACKAGEPATH}/cppyy/allDict.cxx.pch.*
 # and then segfaults when you try to 'import cppyy'
 if [ ! -f ${PACKAGEPATH}/cppyy_backend/lib/libcppyy_backend.so ]; then
 	THELIB=$(find ${DEPENDENCIESDIR}/cppyy-backend -name "libcppyy_backend.so")
-	if [ ! -z "${THELIB}" ] && [ -f $"${THELIB}" ]; then
-	cp ${THELIB} ${PACKAGEPATH}/cppyy_backend/lib/libcppyy_backend.so
+	if [ ! -z "${THELIB}" ] && [ -f "${THELIB}" ]; then
+		cp ${THELIB} ${PACKAGEPATH}/cppyy_backend/lib/libcppyy_backend.so
+	fi
 fi
 
 # a quick test, also trigger rebuilding of the pch
@@ -389,9 +390,9 @@ else
 fi
 
 # add the path to cppyy module to the Setup.sh
-cat << "EOF" >> ${TOOLFRAMEWORKDIR}/Setup.sh
+cat << EOF >> ${TOOLFRAMEWORKDIR}/Setup.sh
 
-export PYTHONPATH=${PACKAGEPATH}:$PYTHONPATH
+export PYTHONPATH=${PACKAGEPATH}:\$PYTHONPATH
 
 EOF
 
