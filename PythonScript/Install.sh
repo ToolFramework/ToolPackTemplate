@@ -135,38 +135,39 @@ else
 fi
 
 # a function to check for presence of cppyy. New ROOT versions come with it.
+# XXX for some reason this doesn't like the use of tab for whitespace!!! XXX
 checkcppyy(){
-	# a quick test, also trigger rebuilding of the pch
-	echo "the following test should print 0·1·2·3·4·5·6·7·8·9¶"
-	RESULT=$(cat << EOF | python3
-	import cppyy
-	from cppyy.gbl.std import vector
-	v = vector[int](range(10))
-	for m in v: print(m, end=' ')
-	
-	EOF
-	)
-	
-	# we need to do it twice as the first time it prints out a message about recompiling the header
-	RESULT=$(cat << EOF | python3
-	import cppyy
-	from cppyy.gbl.std import vector
-	v = vector[int](range(10))
-	for m in v: print(m, end=' ')
-	
-	EOF
-	)
-	
-	# trim whitespace
-	RESULT="$(echo -n ${RESULT} | xargs echo -n)"
-	echo $RESULT | sed 's/ /·/g;s/\t/￫/g;s/\r/§/g;s/$/¶/g'  # check whitespace
-	if [ "$RESULT" != "0 1 2 3 4 5 6 7 8 9" ]; then
-		echo "Test Failed! Check your installation of python3 and cppyy!"
-		return 1
-	else
-		echo "Test Passed"
-		return 0
-	fi
+    # a quick test, also trigger rebuilding of the pch
+    echo "the following test should print 0·1·2·3·4·5·6·7·8·9¶"
+    RESULT=$(cat << EOF | python3
+    import cppyy
+    from cppyy.gbl.std import vector
+    v = vector[int](range(10))
+    for m in v: print(m, end=' ')
+    
+    EOF
+    )
+    
+    # we need to do it twice as the first time it prints out a message about recompiling the header
+    RESULT=$(cat << EOF | python3
+    import cppyy
+    from cppyy.gbl.std import vector
+    v = vector[int](range(10))
+    for m in v: print(m, end=' ')
+    
+    EOF
+    )
+    
+    # trim whitespace
+    RESULT="$(echo -n ${RESULT} | xargs echo -n)"
+    echo $RESULT | sed 's/ /·/g;s/\t/￫/g;s/\r/§/g;s/$/¶/g'  # check whitespace
+    if [ "$RESULT" != "0 1 2 3 4 5 6 7 8 9" ]; then
+        echo "Test Failed! Check your installation of python3 and cppyy!"
+        return 1
+    else
+        echo "Test Passed"
+        return 0
+    fi
 }
 
 echo "checking for pre-existing presence of cppyy"
