@@ -11,6 +11,13 @@ then
 	for Tool in `ls -d */|sed s:/::`
 	do
 		ln -s `pwd`/$Tool ../../InactiveTools/$Tool
+		if [ -f `pwd`/$Tool/Import.sh ]; then
+			echo "Calling Tool $Tool import script..."
+			`pwd`/$Tool/Import.sh
+			if [ $? -ne 0 ]; then
+				echo "Error occurred calling `pwd`/${Tool}Import.sh!"
+			fi
+		fi
 	done
 	else
 	test=0
