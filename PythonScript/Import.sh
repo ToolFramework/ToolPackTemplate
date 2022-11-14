@@ -26,7 +26,11 @@ sed -i '/^CXXFLAGS=.*/a CXXFLAGS += -Wno-long-long' ${ToolAppPath}/Makefile
 
 # add python includes and libraries to the Makefile
 sed -i '/MyToolsInclude =.*/a MyToolsInclude += `python3-config --cflags`' ${ToolAppPath}/Makefile
-sed -i '/MyToolsLib =.*/a MyToolsLib += `python3-config --libs`' ${ToolAppPath}/Makefile
+# for python3.8+ we need to add `--embed` to `--libs` or `--ldflags` to get `-lpython3.*`
+# Using `--ldflags` includes the lib directory `-L/..` as well as the libraries `-l..`
+LIBFLAGS=$(python3-config --ldflags --embed &>/dev/null && echo "python3-config --ldflags --embed" || echo "python3-config --ldflags")
+LIBLINE='MyToolsLib='"${LIBFLAGS}"' $(MyToolsLib)'
+awk -v "var=${LIBLINE}" '{print} /MyToolsLib/ && !x {print var; x=1}' Makefile
 
 # we need to add all UserTools directories to the PYTHONPATH environmental
 # variable so that python tools will be found
