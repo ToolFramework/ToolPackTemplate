@@ -29,7 +29,7 @@ sed -i '/MyToolsInclude =.*/a MyToolsInclude += `python3-config --cflags`' ${Too
 # for python3.8+ we need to add `--embed` to `--libs` or `--ldflags` to get `-lpython3.*`
 # Using `--ldflags` includes the lib directory `-L/..` as well as the libraries `-l..`
 LIBFLAGS=$(python3-config --ldflags --embed &>/dev/null && echo "python3-config --ldflags --embed" || echo "python3-config --ldflags")
-LIBLINE='MyToolsLib='"${LIBFLAGS}"' $(MyToolsLib)'
+LIBLINE='MyToolsLib += `'"${LIBFLAGS}"'`'
 awk -i inplace -v "var=${LIBLINE}" '{print} /MyToolsLib/ && !x {print var; x=1}' ${ToolAppPath}/Makefile
 
 # we need to add all UserTools directories to the PYTHONPATH environmental
