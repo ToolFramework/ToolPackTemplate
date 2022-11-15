@@ -84,7 +84,7 @@ else
 	# if we're run as root, offer to install them
 	if [ "$(whoami)" == "root" ]; then
 		echo "Install these packages?"
-		select result in Yes No; do
+		select result in No Yes; do
 			if [ "$result" == "Yes" ] || [ "$result" == "No" ]; then
 				if [ "$result" == "No" ]; then
 					echo "It is possible the dependencies are installed and were not detected by the scan. "
@@ -139,24 +139,17 @@ fi
 checkcppyy(){
     # a quick test, also trigger rebuilding of the pch
     echo "the following test should print 0·1·2·3·4·5·6·7·8·9¶"
-    RESULT=$(cat << EOF | python3
-    import cppyy
-    from cppyy.gbl.std import vector
-    v = vector[int](range(10))
-    for m in v: print(m, end=' ')
-    
-    EOF
-    )
+    # especially no indents here or python complains
+    PYCMDS="
+import cppyy
+from cppyy.gbl.std import vector
+v = vector[int](range(10))
+for m in v: print(m, end=' ')
+"
+    RESULT=$(echo "${PYCMDS}" | python3)
     
     # we need to do it twice as the first time it prints out a message about recompiling the header
-    RESULT=$(cat << EOF | python3
-    import cppyy
-    from cppyy.gbl.std import vector
-    v = vector[int](range(10))
-    for m in v: print(m, end=' ')
-    
-    EOF
-    )
+    RESULT=$(echo "${PYCMDS}" | python3)
     
     # trim whitespace
     RESULT="$(echo -n ${RESULT} | xargs echo -n)"
