@@ -169,8 +169,11 @@ fi
 
 # seems like we also need to be root to pip install system-wide
 OPTIONS="${THISUSER}"
+if [ "$(whoami)" == "root" ]; then
+	OPTIONS="System ${OPTIONS}"
+fi
 if [ ${GOTSUDO} -eq 0 ]; then
-	OPTIONS="System ${OPTIONS} ${TOOLUSER} Other"
+	OPTIONS="${OPTIONS} ${TOOLUSER} Other"
 fi
 OPTIONS="${OPTIONS} Abort"
 
