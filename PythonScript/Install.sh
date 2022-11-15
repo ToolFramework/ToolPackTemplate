@@ -205,7 +205,7 @@ fi
 
 # if the user wants to install pip dependencies into another account
 # we'll need sudo
-GOTSUDO=`which sudo > /dev/null; echo $?`
+GOTSUDO=`which sudo > /dev/null 2>&1; echo $?`
 SUDOCMD=""
 if [ ${GOTSUDO} -eq 1 ] && [ "$(whoami)" != "root" ]; then
 	SUDOCMD="sudo "
@@ -234,7 +234,9 @@ select result in ${OPTIONS}; do
 			break;
 		elif [ "${result}" == "${THISUSER}" ]; then
 			PIPFLAGS="--user"
-			unset SUDOFLAGS
+			if [ "${THISUSER}" == "$(whoami)" ]; then
+				unset SUDOFLAGS
+			fi
 			break;
 		elif [ "${result}" == "${TOOLUSER}" ]; then
 			THISUSER=${TOOLUSER}
