@@ -18,6 +18,7 @@ ln -s ${thisdir}/Templates/PyTool.py ${ToolAppPath}/UserTools/template/
 
 # add a script for creating new Tools based on it
 ln -s ${thisdir}/Templates/newPyTool.sh ${ToolAppPath}/UserTools/
+chmod +x ${thisdir}/Templates/newPyTool.sh
 
 # the Python API (Python.h) contains a lot of instances of 'long long', which
 # technically is not part of the c++ standard. With the '-pedantic' flag, g++
