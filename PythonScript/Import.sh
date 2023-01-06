@@ -13,6 +13,12 @@ ToolAppPath="${thisdir}/../../../.."
 ToolAppPath=$(readlink -f ${ToolAppPath})
 echo "ToolAppPath is ${ToolAppPath}"
 
+# check if this tool has already been imported into the main repo
+if [ -e ${ToolAppPath}/UserTools/template/PyTool.py ]; then
+	# PythonScript tool already in parent repo
+	exit 0
+fi
+
 # provide a template python tool for users to use.
 ln -s ${thisdir}/Templates/PyTool.py ${ToolAppPath}/UserTools/template/
 
@@ -33,8 +39,16 @@ LIBFLAGS=$(python3-config --ldflags --embed &>/dev/null && echo "python3-config 
 LIBLINE='MyToolsLib += `'"${LIBFLAGS}"'`'
 awk -i inplace -v "var=${LIBLINE}" '{print} /MyToolsLib/ && !x {print var; x=1}' ${ToolAppPath}/Makefile
 
-# we need to add all UserTools directories to the PYTHONPATH environmental
-# variable so that python tools will be found
+# add the path to cppyy module to the Setup.sh
+PACKAGEPATH=$(python3 -m pip show cppyy_backend | grep 'Location' | cut -d' ' -f 2)
+cat << EOF >> ${TOOLFRAMEWORKDIR}/Setup.sh
+
+export PYTHONPATH=${PACKAGEPATH}:\$PYTHONPATH
+
+EOF
+
+# we also need to add all UserTools directories to the PYTHONPATH
+# so that python tools will be found
 cat << "EOF" >> ${ToolAppPath}/Setup.sh
 
 for folder in `ls -d ${PWD}/UserTools/*/ `

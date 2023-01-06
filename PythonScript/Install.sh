@@ -425,12 +425,6 @@ if [ $? -ne 0 ]; then
 fi
 
 # otherwise install succeeded
-# add the path to cppyy module to the Setup.sh
-cat << EOF >> ${TOOLFRAMEWORKDIR}/Setup.sh
-
-export PYTHONPATH=${PACKAGEPATH}:\$PYTHONPATH
-
-EOF
 
 echo "Installation complete"
 exit 0
