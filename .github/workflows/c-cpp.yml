@@ -1,0 +1,29 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    container: 'toolframework/toolframeworkapplication'
+    steps:
+    - uses: actions/checkout@v2
+    - name: setup
+      run: cp -R `pwd` /ToolApplication/UserTools/ImportedTools/ToolPack 
+        && cd /ToolApplication/UserTools/ImportedTools/ToolPack
+        && mv /usr/bin/dialog /usr/bin/dialogx 
+        && ./Import.sh All
+    - name: make
+      run: cd /ToolApplication
+        && source ./Setup.sh
+        && make clean
+        && make
+    - name: test
+      run: cd /ToolApplication 
+        && source ./Setup.sh
+        && ./main
