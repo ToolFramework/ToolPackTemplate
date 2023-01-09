@@ -18,11 +18,6 @@ bool PythonScript::Initialise(std::string configfile, DataModel &data){
   m_variables.Get("InitialiseFunction",initialisefunction);
   m_variables.Get("ExecuteFunction",executefunction);
   m_variables.Get("FinaliseFunction",finalisefunction);
-  std::string scriptconfigfile="";
-  m_variables.Get("ConfigurationsFile",scriptconfigfile);
-
-  // Initialize a Store with the python script's variables
-  if(scriptconfigfile!="") thisscriptsconfigstore.Initialise(scriptconfigfile);
 
   // Initialising Python
   pyinit=0;
@@ -72,7 +67,7 @@ bool PythonScript::Initialise(std::string configfile, DataModel &data){
       // get the pointers
       intptr_t ptrs[] = {reinterpret_cast<intptr_t>(m_data),
                                  reinterpret_cast<intptr_t>(&m_variables),
-                                 reinterpret_cast<intptr_t>(m_log)};
+                                 reinterpret_cast<intptr_t>(m_data->Log)};
       // form into a Python tuple (we need to use a tuple to pass multiple arguments)
       pArgs = PyTuple_New(3);
       for(unsigned int i=0; i<3; ++i){

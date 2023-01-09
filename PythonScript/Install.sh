@@ -84,7 +84,7 @@ else
 	# if we're run as root, offer to install them
 	if [ "$(whoami)" == "root" ]; then
 		echo "Install these packages?"
-		select result in Yes No; do
+		select result in No Yes; do
 			if [ "$result" == "Yes" ] || [ "$result" == "No" ]; then
 				if [ "$result" == "No" ]; then
 					echo "It is possible the dependencies are installed and were not detected by the scan. "
@@ -134,6 +134,43 @@ else
 	fi
 fi
 
+# a function to check for presence of cppyy. New ROOT versions come with it.
+# XXX for some reason this doesn't like the use of tab for whitespace!!! XXX
+checkcppyy(){
+    # a quick test, also trigger rebuilding of the pch
+    echo "the following test should print 0·1·2·3·4·5·6·7·8·9¶"
+    # especially no indents here or python complains
+    PYCMDS="
+import cppyy
+from cppyy.gbl.std import vector
+v = vector[int](range(10))
+for m in v: print(m, end=' ')
+"
+    RESULT=$(echo "${PYCMDS}" | python3)
+    
+    # we need to do it twice as the first time it prints out a message about recompiling the header
+    RESULT=$(echo "${PYCMDS}" | python3)
+    
+    # trim whitespace
+    RESULT="$(echo -n ${RESULT} | xargs echo -n)"
+    echo $RESULT | sed 's/ /·/g;s/\t/￫/g;s/\r/§/g;s/$/¶/g'  # check whitespace
+    if [ "$RESULT" != "0 1 2 3 4 5 6 7 8 9" ]; then
+        echo "Test Failed! Check your installation of python3 and cppyy!"
+        return 1
+    else
+        echo "Test Passed"
+        return 0
+    fi
+}
+
+echo "checking for pre-existing presence of cppyy"
+checkcppyy
+if [ $? -eq 0 ]; then
+	# if we already have it, we have no further actions to take.
+	echo "cppyy already installed. PyTool installation completed successfully"
+	exit 0
+fi
+
 # XXX TODO replace all this user-directory nonsense with
 # --prefix, --root or --target
 # see https://www.mankier.com/1/pip-install
@@ -161,7 +198,7 @@ fi
 
 # if the user wants to install pip dependencies into another account
 # we'll need sudo
-GOTSUDO=`which sudo > /dev/null; echo $?`
+GOTSUDO=`which sudo > /dev/null 2>&1; echo $?`
 SUDOCMD=""
 if [ ${GOTSUDO} -eq 1 ] && [ "$(whoami)" != "root" ]; then
 	SUDOCMD="sudo "
@@ -169,8 +206,11 @@ fi
 
 # seems like we also need to be root to pip install system-wide
 OPTIONS="${THISUSER}"
+if [ ${GOTSUDO} -eq 0 ] || [ "$(whoami)" == "root" ]; then
+	OPTIONS="System ${OPTIONS}"
+fi
 if [ ${GOTSUDO} -eq 0 ]; then
-	OPTIONS="System ${OPTIONS} ${TOOLUSER} Other"
+	OPTIONS="${OPTIONS} ${TOOLUSER} Other"
 fi
 OPTIONS="${OPTIONS} Abort"
 
@@ -187,7 +227,9 @@ select result in ${OPTIONS}; do
 			break;
 		elif [ "${result}" == "${THISUSER}" ]; then
 			PIPFLAGS="--user"
-			unset SUDOFLAGS
+			if [ "${THISUSER}" == "$(whoami)" ]; then
+				unset SUDOFLAGS
+			fi
 			break;
 		elif [ "${result}" == "${TOOLUSER}" ]; then
 			THISUSER=${TOOLUSER}
@@ -246,6 +288,23 @@ $SUDOFLAGS python3 -m pip install $PIPFLAGS --upgrade pip
 $SUDOFLAGS python3 -m pip install $PIPFLAGS --upgrade pip
 # we'll also need wheel, or the CPyCppyy install will fail
 $SUDOFLAGS python3 -m pip install $PIPFLAGS wheel
+
+# otherwise we need to install it
+echo "failed to find existing (working) cppyy install; install one now?"
+select result in Yes No; do
+	if [ "$result" == "Yes" ] || [ "$result" == "No" ]; then
+		if [ "$result" == "No" ]; then
+			echo "terminating.";
+			exit 1;
+		else
+			break;
+		fi
+	else
+		echo "please enter 1 or 2";
+	fi
+done
+
+# if we got here user said yes: proceed with cppyy installation
 
 # setup installation environment
 export STDCXX=11
@@ -358,43 +417,14 @@ if [ ! -f ${PACKAGEPATH}/cppyy_backend/lib/libcppyy_backend.so ]; then
 	fi
 fi
 
-# a quick test, also trigger rebuilding of the pch
-echo "the following test should print 0·1·2·3·4·5·6·7·8·9¶"
-RESULT=$(cat << EOF | python3
-import cppyy
-from cppyy.gbl.std import vector
-v = vector[int](range(10))
-for m in v: print(m, end=' ')
-
-EOF
-)
-
-# we need to do it twice as the first time it prints out a message about recompiling the header
-RESULT=$(cat << EOF | python3
-import cppyy
-from cppyy.gbl.std import vector
-v = vector[int](range(10))
-for m in v: print(m, end=' ')
-
-EOF
-)
-
-# trim whitespace
-RESULT="$(echo -n ${RESULT} | xargs echo -n)"
-echo $RESULT | sed 's/ /·/g;s/\t/￫/g;s/\r/§/g;s/$/¶/g'  # check whitespace
-if [ "$RESULT" != "0 1 2 3 4 5 6 7 8 9" ]; then
-	echo "Test Failed! Check your installation of python3 and cppyy!"
+echo "checking installation of cppyy"
+checkcppyy
+if [ $? -ne 0 ]; then
+	echo "Installation failed. Please manually install cppyy."
 	exit 1
-else
-	echo "Test Passed"
 fi
 
-# add the path to cppyy module to the Setup.sh
-cat << EOF >> ${TOOLFRAMEWORKDIR}/Setup.sh
-
-export PYTHONPATH=${PACKAGEPATH}:\$PYTHONPATH
-
-EOF
+# otherwise install succeeded
 
 echo "Installation complete"
 exit 0
