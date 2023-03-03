@@ -1,21 +1,21 @@
-# ToolPack
+# ToolPackTemplate
 
-ToolPack is a pack of useful tools to extend the framework and provide extra functionality. This was done to keep the main core lightweight and allow people to add only the parts which are needed.
+ToolPackTemplate is a template to create a pack of useful tools to extend the framework and provide extra functionality. This was done to keep the main core lightweight and allow people to add only the parts which are needed.
 
 # Installation
 
-To make use of ToolPack or any other Tool collections navigate to the imported Tools folder In your ToolApplication isntallation.
+To make use of a ToolPack or any other Tool collections navigate to the imported Tools folder In your ToolApplication isntallation.
 
 ``` cd Usertools/ImportedTools``` 
 
 Then clone this repo to that location
 
-``` git clone https://github.com/ToolFramework/ToolPack.git ```
+``` git clone https://github.com/ToolFramework/<ToolPack.git> ```
 
 Once cloned navigate into the new ToolPack folder and run the ```Import.sh``` script
 
 ```
-cd ToolPack
+cd <ToolPack>
 ./Import.sh
 ```
 
